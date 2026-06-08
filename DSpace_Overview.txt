@@ -1,0 +1,37 @@
+DSpace Project Architecture Overview
+
+1. Backend Components (Java)
+
+- dspace-api: Contains the core business logic, domain objects, and service layer.
+  - org.dspace.*: Includes packages for content management, authentication (EPerson), authorization, workflow, submission, discovery, identifiers, storage, and statistics.
+  - Key classes: Item, Collection, Community, ResourcePolicy, WorkflowItem, etc.
+
+- dspace-server-webapp: Contains the REST API controllers and web application logic.
+  - org.dspace.app.rest: REST API layer (controllers, models, converters, security).
+  - Provides the interface for the Angular frontend.
+
+2. Frontend (Angular)
+- Repository: DSpace/dspace-angular
+- Provides the user interface that consumes the REST API.
+
+3. Key Functional Components
+- Content Management: Hierarchical structure (Community > Collection > Item) with rich metadata support.
+- Access Control: Role-based permissions, resource policies, and bitstream-level security.
+- Submission Workflow: Configurable multi-step workflows (XML-defined or simple).
+- Discovery & Search: Integration with Solr for full-text searching and faceted discovery.
+- Protocols: OAI-PMH (harvesting/exposing), SWORD (deposit), and IIIF (image serving).
+
+4. Configuration & Database
+- Uses Spring framework and Hibernate (JPA) for persistence.
+- Database: PostgreSQL.
+- Configuration: config/ directory (dspace.cfg, spring/hibernate configs).
+
+5. Deployment Options
+- WAR file deployment (e.g., Tomcat).
+- Docker Compose (for development/testing).
+- Docker/Kubernetes (for production).
+
+6. Testing
+- Unit tests (Maven Surefire).
+- Integration tests (Maven Failsafe).
+- Database test fixtures.
