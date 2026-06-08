@@ -1,88 +1,67 @@
-# DSpace Project Architecture Overview
+# Comprehensive DSpace Project Report
 
-## 1. Backend Components (Java)
+## 1. Project Overview
+DSpace is an open-source digital asset management system used by thousands of institutions worldwide to provide durable access to digital research, data, and scholarly work. It is built with a Java-based backend providing a comprehensive REST API and an Angular-based frontend.
 
-### `dspace-api` (Core Business Logic)
-- Contains the core domain model, business logic, and service layer.
-- **Packages (`org.dspace.*`)**:
-  - `content`: Item, Collection, Community management, metadata handling, bitstream management.
-  - `eperson` & `authenticate`: User management, authentication, and policy management.
-  - `authorize`: Authorization and permission checking (ResourcePolicy, Group).
-  - `workflow` & `xmlworkflow`: Submission workflow management (XML-defined or simple).
-  - `submit`: Item submission process.
-  - `discover`: Discovery and search functionality (integration with Solr).
-  - `identifier`: Handle/UUID identifier management.
-  - `storage`: Bitstream storage and retrieval.
-  - `statistics`: Usage statistics and tracking.
-  - `search`: Search index integration.
-  - `oai`: OAI-PMX protocol support.
-  - `sword` & `swordv2`: SWORD protocol support.
-  - `iiif`: IIIF image protocol support.
+## 2. Architecture & Modules
+The project is divided into several key Java modules:
 
-### `dspace-server-webapp` (REST API Layer)
-- Contains REST API controllers and web application configuration.
-- **`org.dspace.app.rest`**: REST API layer.
-- **`repository`**: Repository classes (data access layer for JPA/Hibernate).
-- **`converter`**: Converts between API models and domain objects.
-- **`link`**: HAL link building utilities.
-- **`security`**: Spring Security configuration.
-- **`filter`**: Request/response filters.
-- **`login`**: Login session handling.
+### 2.1 Backend (Java)
+*   **`dspace-api`**: The core business logic layer. It contains the domain model and service layer.
+*   **`dspace-server-webapp`**: The REST API layer, handling HTTP requests and managing the Spring Web application context.
+*   **`dspace-oai`**: OAI-PMH protocol support for metadata harvesting and exposing.
+*   **`dspace-sword` / `dspace-swordv2`**: Support for the SWORD deposition protocol.
+*   **`dspace-iiif`**: IIIF (International Image Interoperability Framework) support.
+*   **`dspace-rdf`**: RDF serialization of DSpace objects.
 
-### Supporting Modules
-- `dspace-services`: Configuration and service integration.
-- `dspace-oai`: OAI-PMH protocol support.
-- `dspace-sword` & `dspace-swordv2`: SWORD deposition protocols.
-- `dspace-rdf`: RDF serialization of DSpace objects.
-- `dspace-iiif`: IIIF image serving.
-- `dspace-saml2`: SAML 2.0 authentication support.
+### 2.2 Frontend (Angular)
+*   Located in `DSpace/dspace-angular`. It serves as the user interface and communicates exclusively with the backend REST API.
 
-## 2. Frontend (Angular)
-- Located in `DSpace/dspace-angular` repository.
-- Provides the user interface.
-- Communicates with the backend via the REST API.
+## 3. Key Functional Components & Files
 
-## 3. Key Functional Components & REST Controllers
-- **`ItemRestController`**, **`CollectionRestController`**, **`CommunityRestController`**: CRUD operations for repository hierarchy.
-- **`EPersonRestController`**: User management and profiles.
-- **`BitstreamRestController`**: Bitstream (file) operations and replacement.
-- **`RelationshipRestController`**: Item relationships (e.g., citing/cited).
-- **`DiscoveryRestController`**: Discovery/search endpoint.
-- **`StatisticsRestController`**: Usage statistics.
-- **`AuthenticationRestController`**: Authentication endpoints (LDAP, Shibboleth, OIDC).
-- **`GroupRestController`**: Group management.
+### 3.1 Content Management (`dspace-api/src/main/java/org/dspace/content`)
+*   **Core Entities**: `DSpaceObject.java`, `Item.java`, `Collection.java`, `Community.java`, `Entity.java`.
+*   **Metadata Handling**: `MetadataSchema.java`, `MetadataField.java`, `MetadataValue.java`, `DCDate.java`, `DCLanguage.java`.
+*   **Bitstream & Bundle Management**: `Bitstream.java`, `Bundle.java`, `BitstreamFormat.java`, `BitstreamServiceImpl.java`.
+*   **Relationships**: `Relationship.java`, `RelationshipType.java`, `RelationshipMetadataService.java`.
+*   **Authority & Vocabulary**: `authority/`, `vocabulary/` subdirectories for controlled vocabulary and metadata authority management.
 
-## 4. Architecture Layers
-- **API/Controller Layer**: Handles HTTP requests and maps them to services.
-- **Converter Layer**: Converts between API JSON representations and internal Java objects.
-- **Model Layer (`org.dspace.app.rest.model`)**: API model objects representing REST resources.
-- **Repository Layer (`repository`)**: Data access objects (DAOs) interacting with the database via JPA/Hibernate.
-- **Service/Business Layer**: Core business logic and domain objects.
+### 3.2 REST API Controllers (`dspace-server-webapp/src/main/java/org/dspace/app/rest`)
+*   **Resource Controllers**: `RestResourceController.java`, `ItemRestController.java`, `CollectionRestController.java`, `CommunityRestController.java`.
+*   **Discovery & Search**: `DiscoveryRestController.java` (integrates with Solr).
+*   **Bitstream Operations**: `BitstreamRestController.java`, `BitstreamReplaceController.java`.
+*   **Submission**: `ItemTemplateRestController.java`, `SubmissionCCLicenseUrlRepository.java`.
+*   **Authentication & Authorization**: `AuthenticationRestController.java`, `GroupRestController.java`, `ResourcePolicyEPersonReplaceRestController.java`.
+*   **Statistics**: `StatisticsRestController.java`.
+*   **Workflow Management**: `WorkflowDefinitionCollectionsLinkRepository.java`, `WorkflowStepActionsLinkRepository.java`.
 
-## 5. Configuration & Database
-- Uses Spring Framework and Hibernate (JPA) for persistence.
-- **Database**: PostgreSQL.
-- **Configuration**: `dspace/config/` directory (`dspace.cfg`, Spring context, Hibernate mapping).
-- Manages connection pooling and ORM mapping.
+## 4. Key Features
+1.  **Hierarchical Repository**: Supports a Community -> Collection -> Item hierarchy for organizing digital assets.
+2.  **Rich Metadata**: Extensible metadata schema (Dublin Core + custom fields) and crosswalk capabilities.
+3.  **Bitstream Management**: Supports versioning, categorization, and replacement of binary files (PDFs, images, datasets).
+4.  **Relationships**: Links between items (e.g., citing/cited, author/thesis).
+5.  **OAI-PMX & SWORD**: Protocols for external harvesting and deposit.
+6.  **Access Control**: Role-based access control (RBAC) with specific policies for read, write, and admin permissions.
+7.  **Search & Discovery**: Apache Solr integration for powerful, faceted search.
+8.  **Statistics & Usage Tracking**: Tracks download and view counts.
+9.  **Authentication**: Supports local login, LDAP, Shibboleth, SAML, and OIDC.
 
-## 6. Key Features & Capabilities
-1. **Content Management**: Hierarchical structure (Community > Collection > Item) with rich metadata support.
-2. **Access Control**: Role-based access control, resource policies, and bitstream-level security.
-3. **Submission Workflow**: Configurable multi-step workflows with approval steps.
-4. **Discovery & Search**: Full-text search via Apache Solr with faceted search capabilities.
-5. **OAI-PMH**: Metadata harvesting and exposing protocol support.
-6. **SWORD**: External deposit and batch upload support (v1 & v2).
-7. **Statistics & Usage**: Download and view statistics tracking.
-8. **Authentication**: Local, LDAP, Shibboleth, SAML, OIDC, and external authentication plugins.
-9. **IIIF**: Standard image protocol support.
+## 5. Configuration & Persistence
+*   **Database**: PostgreSQL.
+*   **ORM**: Hibernate (JPA) for database persistence.
+*   **Framework**: Spring Framework (MVC, Security, Configuration).
+*   **Configuration Files**: `dspace.cfg` and Spring context files in `config/`.
 
-## 7. Deployment & Testing
-- **Deployment**: WAR file deployment (Tomcat), Docker Compose (development), Docker/Kubernetes (production).
-- **Testing**:
-  - Unit tests (Maven Surefire).
-  - Integration tests (Maven Failsafe).
-  - Database test fixtures (Flyway/H2/HSQLDB for testing).
-- **CI/CD**: GitHub Actions for automated builds, tests, and releases.
+## 6. Deployment Options
+*   **Traditional**: Deploy as a WAR file to a servlet container (e.g., Apache Tomcat or Jetty).
+*   **Docker**: Provided `Dockerfile` and `docker-compose.yml` for development and testing.
+*   **Kubernetes**: Supported via Docker/Kubernetes for production cloud environments.
+
+## 7. Testing
+*   **Unit Tests**: Run via Maven Surefire (`-DskipUnitTests=false`).
+*   **Integration Tests**: Run via Maven Failsafe (`-DskipIntegrationTests=false`).
+*   **Test Fixtures**: Database test fixtures (H2/HSQLDB) for mocking the persistence layer.
+*   **CI/CD**: Automated builds and tests via GitHub Actions.
 
 ## 8. Summary
-DSpace is a mature, modular Java-based digital repository system with a separate Angular frontend. It provides a robust REST API, supports multiple external protocols (OAI-PMH, SWORD, IIIF), and utilizes standard web technologies (Spring, Hibernate, PostgreSQL) for persistence and web serving. The architecture follows a clear separation of concerns across the API, converter, repository, and business logic layers.
+DSpace is a mature, highly modular Java-based repository system. It features a robust REST API, a flexible and XML-configurable submission workflow, and standard protocol support (OAI-PMH, SWORD, IIIF). Its clear separation of concerns across the API, converter, repository, and business logic layers makes it extensible and suitable for large-scale institutional repositories.
