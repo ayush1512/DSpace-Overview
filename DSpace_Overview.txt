@@ -40,7 +40,7 @@ The project is divided into several key Java modules:
 2.  **Rich Metadata**: Extensible metadata schema (Dublin Core + custom fields) and crosswalk capabilities.
 3.  **Bitstream Management**: Supports versioning, categorization, and replacement of binary files (PDFs, images, datasets).
 4.  **Relationships**: Links between items (e.g., citing/cited, author/thesis).
-5.  **OAI-PMX & SWORD**: Protocols for external harvesting and deposit.
+5.  **OAI-PMH & SWORD**: Protocols for external harvesting and deposit.
 6.  **Access Control**: Role-based access control (RBAC) with specific policies for read, write, and admin permissions.
 7.  **Search & Discovery**: Apache Solr integration for powerful, faceted search.
 8.  **Statistics & Usage Tracking**: Tracks download and view counts.
